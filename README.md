@@ -1,137 +1,118 @@
-🐚 Advanced Unix-like Shell in Python
+# 🐚 Advanced Unix-Like Shell in Python
 
-An advanced Unix-like shell implemented in Python, supporting core shell features such as command parsing, built-in commands, PATH-based execution, input/output redirection, pipelines, and command history.
-This project demonstrates operating-system concepts, process management, and clean modular design.
+A fully functional **advanced Unix-like shell** implemented in Python.  
+This project demonstrates **systems programming concepts**, **process management**, and **clean modular design**, inspired by real Unix shells such as `bash`.
 
-✨ Features
-1. Core Shell Capabilities
+---
 
-Interactive REPL (Read–Eval–Print Loop)
+## 📌 Overview
 
-Graceful exit using Ctrl+D
+This shell supports:
 
-Robust command parsing
+- Interactive command execution (REPL)
+- Built-in commands
+- PATH-based external command execution
+- Input / Output redirection
+- Command pipelines
+- Command history
 
-Modular architecture with clear separation of concerns
+The project is designed incrementally and cleanly, making it **resume-ready** and **interview-friendly**.
 
-2. Built-in Commands
+---
 
-exit – Exit the shell
+## ✨ Features
 
-echo – Print arguments to standard output
+### 🟢 Core Shell
+- Interactive REPL (`$` prompt)
+- Graceful exit using `Ctrl+D`
+- Modular architecture
+- Clean separation of concerns
 
-type – Identify whether a command is a shell builtin
+### 🟢 Built-in Commands
+| Command | Description |
+|------|-----------|
+| `exit` | Exit the shell |
+| `echo` | Print arguments |
+| `type` | Identify builtin commands |
+| `history` | Show command history |
 
-history – Display previously executed commands
+### 🟢 External Commands
+- PATH-based executable resolution
+- Runs system commands (`ls`, `pwd`, `whoami`, etc.)
+- Uses `subprocess` for safe execution
 
-3. External Command Execution
+### 🟢 Advanced Unix Features
+- Input redirection `<`
+- Output redirection `>`
+- Append redirection `>>`
+- Pipelines `|`
+- Multi-process execution with OS pipes
+- Proper stdin/stdout restoration
 
-PATH-based executable lookup
+### 🟢 Command History
+- Stores all user-entered commands
+- `history` builtin prints numbered list
+- Includes successful and failed commands
 
-Executes system commands (ls, pwd, whoami, etc.)
+---
 
-Proper process handling using subprocess
+## 🧠 Architecture
 
-4. Advanced Unix Features
-
-Input redirection (<)
-
-Output redirection (>)
-
-Append redirection (>>)
-
-Pipelines (|) with multi-process execution
-
-Correct stdin/stdout restoration after execution
-
-5. Command History
-
-Stores all user-entered commands (except empty input)
-
-history builtin displays numbered command list
-
-🧠 Architecture Overview
-
-The shell is designed in a layered and modular way, similar to real Unix shells.
+The shell is structured similarly to real Unix shells.
 
 User
- ↓
+↓
 REPL (loop.py)
- ↓
+↓
 History Manager (history.py)
- ↓
+↓
 Parser (parser.py)
- ↓
+↓
 Executor (executor.py)
- ├── Builtins (builtins.py)
- └── PATH Resolver (path.py)
- ↓
+├── Builtins (builtins.py)
+└── PATH Resolver (path.py)
+↓
 Operating System
 
-File Responsibilities
-File	Responsibility
-loop.py	Reads user input (REPL)
-main.py	Controls shell lifecycle and orchestration
-parser.py	Parses commands, redirection, and pipelines
-executor.py	Executes builtins, external commands, pipes
-builtins.py	Shell built-in command implementations
-path.py	PATH-based executable resolution
-history.py	Command history storage and retrieval
-📂 Project Structure
+---
+
+## 🧩 Module Responsibilities
+
+| File | Responsibility |
+|----|---------------|
+| `loop.py` | Read user input (REPL) |
+| `main.py` | Shell lifecycle & orchestration |
+| `parser.py` | Parse commands, redirection & pipes |
+| `executor.py` | Execute builtins, pipelines & programs |
+| `builtins.py` | Built-in shell commands |
+| `path.py` | PATH-based executable lookup |
+| `history.py` | Command history management |
+
+---
+
+## 📂 Project Structure
+
 python_shell/
 └── shell/
-    ├── __init__.py
-    ├── main.py
-    ├── loop.py
-    ├── parser.py
-    ├── executor.py
-    ├── builtins.py
-    ├── path.py
-    └── history.py
+├── init.py
+├── main.py
+├── loop.py
+├── parser.py
+├── executor.py
+├── builtins.py
+├── path.py
+└── history.py
 
-▶️ How to Run
+---
 
-From the project root directory:
+## ▶️ How to Run
 
+From the **project root directory**:
+
+```bash
 python -m shell.main
 
-
-You will see a shell prompt:
-
+You will see:
 $
 
-🧪 Example Usage
-$ ls -l
-$ echo hello world
-$ echo hello > out.txt
-$ cat < out.txt
-$ ls | wc -l
-$ history
-1  ls -l
-2  echo hello world
-3  echo hello > out.txt
-4  cat < out.txt
-5  ls | wc -l
-6  history
-$ exit
-
-🚀 Skills & Concepts Demonstrated
-
-Unix shell design principles
-
-Process creation and management
-
-Inter-process communication using pipes
-
-File descriptor redirection
-
-Modular Python architecture
-
-Systems programming concepts
-
-Error handling and resource cleanup
-
-
-📜 License
-
-This project is for educational and learning purposes.
+Now you can start the shell 
