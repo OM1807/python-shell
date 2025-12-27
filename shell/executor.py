@@ -6,12 +6,8 @@ from path import find_executable
 
 
 def execute(parsed):
-    
-    #pipeline
     if isinstance(parsed, list):
         return execute_pipeline(parsed)
-
-    #single command
     return execute_single(parsed)
 
 
@@ -29,7 +25,6 @@ def execute_single(parsed):
     output_handle = None
 
     try:
-        # Redirection
         if stdin_file:
             input_handle = open(stdin_file, "r")
             sys.stdin = input_handle
@@ -39,11 +34,9 @@ def execute_single(parsed):
             output_handle = open(stdout_file, mode)
             sys.stdout = output_handle
 
-        # Builtins
         if is_builtin(command):
             return execute_builtin(command, args)
 
-        # External
         executable = find_executable(command)
         if executable is None:
             print(f"{command}: command not found")
@@ -73,7 +66,6 @@ def execute_pipeline(pipeline):
         command = cmd["command"]
         args = cmd["args"]
 
-        # Builtins not allowed in pipeline (simplified)
         if is_builtin(command):
             print(f"{command}: cannot be used in pipeline")
             return None
@@ -83,7 +75,6 @@ def execute_pipeline(pipeline):
             print(f"{command}: command not found")
             return None
 
-        # Create pipe except for last command
         if i < len(pipeline) - 1:
             proc = subprocess.Popen(
                 [executable] + args,
@@ -96,13 +87,11 @@ def execute_pipeline(pipeline):
                 stdin=prev_pipe
             )
 
-        # Close previous pipe in parent
         if prev_pipe:
             prev_pipe.close()
 
         prev_pipe = proc.stdout
         processes.append(proc)
 
-    # Wait for all processes
     for proc in processes:
         proc.wait()

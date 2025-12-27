@@ -42,14 +42,11 @@ def parse_command(segment):
 
 
 def parse(command_line):
-    # Split pipeline
     segments = [seg.strip() for seg in command_line.split("|")]
 
-    # Single command (no pipe)
     if len(segments) == 1:
         return parse_command(segments[0])
 
-    # Pipeline
     pipeline = []
     for seg in segments:
         pipeline.append(parse_command(seg))

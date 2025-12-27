@@ -5,7 +5,7 @@ def repl():
     except EOFError:
         return None
 
-    # check empty input
     if cmd.strip() == "":
-            return ""
+        return ""
+
     return cmd
