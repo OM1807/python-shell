@@ -1,4 +1,4 @@
-from history import get_all
+from .history import get_all
 
 BUILTINS = ["exit", "echo", "type", "history"]
 

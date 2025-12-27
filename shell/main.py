@@ -1,7 +1,7 @@
-from loop import repl
-from parser import parse
-from executor import execute
-from history import add
+from .loop import repl
+from .parser import parse
+from .executor import execute
+from .history import add
 
 
 def main():

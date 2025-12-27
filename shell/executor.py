@@ -1,8 +1,8 @@
 import subprocess
 import sys
 
-from builtins import is_builtin, execute_builtin
-from path import find_executable
+from .builtins import is_builtin, execute_builtin
+from .path import find_executable
 
 
 def execute(parsed):
