@@ -1,26 +1,65 @@
-import os
+import subprocess
+import sys
+
+from builtins import is_builtin, execute_builtin
+from path import find_executable
 
 
-def find_executable(command):
+def execute(parsed):
+    command = parsed["command"]
+    args = parsed["args"]
+    stdin_file = parsed["stdin"]
+    stdout_file = parsed["stdout"]
+    append = parsed["append"]
 
-    # If command contains a slash, treat it as a path
-    if "/" in command:
-        if os.path.isfile(command) and os.access(command, os.X_OK):
-            return command
-        return None
+    # Save original streams
+    original_stdin = sys.stdin
+    original_stdout = sys.stdout
 
-    # Get PATH environment variable
-    path_env = os.environ.get("PATH")
-    if not path_env:
-        return None
+    input_handle = None
+    output_handle = None
 
-    # Split PATH into directories
-    paths = path_env.split(":")
+    try:
+        # Handle input redirection
+        if stdin_file:
+            input_handle = open(stdin_file, "r")
+            sys.stdin = input_handle
 
-    # Search for executable in PATH directories
-    for directory in paths:
-        full_path = os.path.join(directory, command)
-        if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
-            return full_path
+        # Handle output redirection
+        if stdout_file:
+            mode = "a" if append else "w"
+            output_handle = open(stdout_file, mode)
+            sys.stdout = output_handle
 
-    return None
+        # Built-in commands
+        if is_builtin(command):
+            result = execute_builtin(command, args)
+            return result
+
+        # External command
+        executable = find_executable(command)
+        if executable is None:
+            print(f"{command}: command not found")
+            return None
+
+        subprocess.run(
+            [executable] + args,
+            stdin=sys.stdin,
+            stdout=sys.stdout
+        )
+
+    except FileNotFoundError as e:
+        print(f"file error: {e}")
+
+    except PermissionError:
+        print(f"{command}: permission denied")
+
+    finally:
+        # Restore original streams
+        if input_handle:
+            input_handle.close()
+        if output_handle:
+            output_handle.close()
+
+        sys.stdin = original_stdin
+        sys.stdout = original_stdout
