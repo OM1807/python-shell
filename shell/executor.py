@@ -6,13 +6,22 @@ from path import find_executable
 
 
 def execute(parsed):
+    
+    #pipeline
+    if isinstance(parsed, list):
+        return execute_pipeline(parsed)
+
+    #single command
+    return execute_single(parsed)
+
+
+def execute_single(parsed):
     command = parsed["command"]
     args = parsed["args"]
     stdin_file = parsed["stdin"]
     stdout_file = parsed["stdout"]
     append = parsed["append"]
 
-    # Save original streams
     original_stdin = sys.stdin
     original_stdout = sys.stdout
 
@@ -20,23 +29,21 @@ def execute(parsed):
     output_handle = None
 
     try:
-        # Handle input redirection
+        # Redirection
         if stdin_file:
             input_handle = open(stdin_file, "r")
             sys.stdin = input_handle
 
-        # Handle output redirection
         if stdout_file:
             mode = "a" if append else "w"
             output_handle = open(stdout_file, mode)
             sys.stdout = output_handle
 
-        # Built-in commands
+        # Builtins
         if is_builtin(command):
-            result = execute_builtin(command, args)
-            return result
+            return execute_builtin(command, args)
 
-        # External command
+        # External
         executable = find_executable(command)
         if executable is None:
             print(f"{command}: command not found")
@@ -48,14 +55,7 @@ def execute(parsed):
             stdout=sys.stdout
         )
 
-    except FileNotFoundError as e:
-        print(f"file error: {e}")
-
-    except PermissionError:
-        print(f"{command}: permission denied")
-
     finally:
-        # Restore original streams
         if input_handle:
             input_handle.close()
         if output_handle:
@@ -63,3 +63,46 @@ def execute(parsed):
 
         sys.stdin = original_stdin
         sys.stdout = original_stdout
+
+
+def execute_pipeline(pipeline):
+    processes = []
+    prev_pipe = None
+
+    for i, cmd in enumerate(pipeline):
+        command = cmd["command"]
+        args = cmd["args"]
+
+        # Builtins not allowed in pipeline (simplified)
+        if is_builtin(command):
+            print(f"{command}: cannot be used in pipeline")
+            return None
+
+        executable = find_executable(command)
+        if executable is None:
+            print(f"{command}: command not found")
+            return None
+
+        # Create pipe except for last command
+        if i < len(pipeline) - 1:
+            proc = subprocess.Popen(
+                [executable] + args,
+                stdin=prev_pipe,
+                stdout=subprocess.PIPE
+            )
+        else:
+            proc = subprocess.Popen(
+                [executable] + args,
+                stdin=prev_pipe
+            )
+
+        # Close previous pipe in parent
+        if prev_pipe:
+            prev_pipe.close()
+
+        prev_pipe = proc.stdout
+        processes.append(proc)
+
+    # Wait for all processes
+    for proc in processes:
+        proc.wait()
